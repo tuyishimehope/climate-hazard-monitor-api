@@ -1,0 +1,144 @@
+# =============================================================================
+# pyproject.toml — Disaster Management System (Backend)
+# =============================================================================
+# The single source of truth for project metadata, dependencies and tool
+# configuration (PEP 518 / PEP 621 / PEP 735).
+#
+# Quick start
+# -----------
+#   With uv (recommended):
+#     uv sync                      # create .venv and install runtime + dev deps
+#     uv run pytest                # run the test suite
+#
+#   With plain pip (pip >= 25.1 is required for --group):
+#     python -m venv .venv && source .venv/bin/activate
+#     pip install --group dev      # install the dev tooling
+#
+# Common tasks
+# ------------
+#   ruff check .                   # lint
+#   ruff check . --fix             # lint and auto-fix
+#   ruff format .                  # format code
+#   mypy .                         # static type check
+#   pytest                         # run tests
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Project metadata (PEP 621)
+# https://packaging.python.org/en/latest/specifications/pyproject-toml/
+# -----------------------------------------------------------------------------
+[project]
+name = "disaster-mgt-backend"
+version = "0.1.0"
+description = "Backend services for the Disaster Management System."
+readme = "README.md"
+# Matches the interpreter used by the local .venv (Python 3.14).
+requires-python = ">=3.14"
+authors = [{ name = "tuyishimekyrie" }]
+
+# Runtime dependencies: packages the application needs to run in production.
+# Add them here (or with `uv add <package>`), pinning a compatible lower bound,
+# e.g. "fastapi>=0.115".
+dependencies = []
+
+
+# -----------------------------------------------------------------------------
+# Dependency groups (PEP 735)
+# Development-only packages. They are never installed in production and are
+# not published as part of the package metadata.
+#   uv:  installed automatically by `uv sync` (the "dev" group is the default)
+#   pip: `pip install --group dev`
+# -----------------------------------------------------------------------------
+[dependency-groups]
+dev = [
+    "ruff",   # linter + formatter
+    "mypy",   # static type checker
+    "pytest", # test runner
+]
+
+# NOTE: No [build-system] table is declared, so this project is treated as an
+# application rather than an installable library. If you later want to build
+# a wheel or `pip install -e .`, add for example:
+#
+#   [build-system]
+#   requires = ["hatchling"]
+#   build-backend = "hatchling.build"
+
+
+# =============================================================================
+# Tool configuration
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Ruff — linting and formatting
+# https://docs.astral.sh/ruff/configuration/
+# -----------------------------------------------------------------------------
+[tool.ruff]
+line-length = 88          # same default as Black
+target-version = "py314"  # keep in sync with requires-python
+extend-exclude = [".venv", "migrations"]
+
+[tool.ruff.lint]
+# Rule sets enabled (see https://docs.astral.sh/ruff/rules/):
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes (unused imports, undefined names, ...)
+    "I",    # isort (import ordering)
+    "B",    # flake8-bugbear (likely bugs and design problems)
+    "UP",   # pyupgrade (use modern Python syntax)
+    "SIM",  # flake8-simplify
+    "C4",   # flake8-comprehensions
+    "N",    # pep8-naming
+    "S",    # flake8-bandit (security checks)
+    "RUF",  # Ruff-specific rules
+]
+ignore = [
+    "E501", # line length is handled by the formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests legitimately use `assert` and hard-coded test credentials.
+"tests/**/*.py" = ["S101", "S105", "S106"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true  # also format code examples inside docstrings
+
+
+# -----------------------------------------------------------------------------
+# mypy — static type checking
+# https://mypy.readthedocs.io/en/stable/config_file.html
+# -----------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.14"
+strict = true               # enables all optional strictness checks
+warn_unreachable = true     # flag code that can never run
+pretty = true               # nicer, more readable error output
+show_error_codes = true
+exclude = ["^\\.venv/", "^build/", "^dist/"]
+
+# Tests don't need full annotations on every helper/fixture.
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+
+# -----------------------------------------------------------------------------
+# pytest — test runner
+# https://docs.pytest.org/en/stable/reference/customize.html
+# -----------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+# -ra: summary of all non-passing tests
+# --strict-markers: fail on unregistered @pytest.mark.* markers
+# --strict-config: fail on invalid pytest configuration
+addopts = "-ra --strict-markers --strict-config"
+# Register custom markers here so --strict-markers accepts them.
+markers = [
+    "slow: tests that take a long time to run (deselect with '-m \"not slow\"')",
+    "integration: tests that need external services (database, APIs, ...)",
+]
