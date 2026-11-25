@@ -41,8 +41,13 @@ authors = [{ name = "tuyishimekyrie" }]
 # Add them here (or with `uv add <package>`), pinning a compatible lower bound,
 # e.g. "fastapi>=0.115".
 dependencies = [
+    "alembic",
     "fastapi",
-    "aiohttp",
+    "httpx",
+    "psycopg[binary]",
+    "pydantic-settings",
+    "sqlalchemy",
+    "uvicorn",
 ]
 
 
@@ -80,7 +85,7 @@ dev = [
 [tool.ruff]
 line-length = 88          # same default as Black
 target-version = "py314"  # keep in sync with requires-python
-extend-exclude = [".venv", "migrations"]
+extend-exclude = [".venv", "alembic/versions"]
 
 [tool.ruff.lint]
 # Rule sets enabled (see https://docs.astral.sh/ruff/rules/):
