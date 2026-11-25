@@ -40,7 +40,9 @@ authors = [{ name = "tuyishimekyrie" }]
 # Runtime dependencies: packages the application needs to run in production.
 # Add them here (or with `uv add <package>`), pinning a compatible lower bound,
 # e.g. "fastapi>=0.115".
-dependencies = []
+dependencies = [
+    "fastapi",
+]
 
 
 # -----------------------------------------------------------------------------
