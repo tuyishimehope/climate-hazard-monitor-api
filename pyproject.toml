@@ -42,6 +42,7 @@ authors = [{ name = "tuyishimekyrie" }]
 # e.g. "fastapi>=0.115".
 dependencies = [
     "fastapi",
+    "aiohttp",
 ]
 
 
