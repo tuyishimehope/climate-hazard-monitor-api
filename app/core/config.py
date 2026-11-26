@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     RAIN_WATCH_MM: float = 50
     RAIN_WARNING_MM: float = 100
 
+    OPEN_METEO_DAILY_LIMIT: int = 10_000
+    OPEN_METEO_MONTHLY_LIMIT: int = 300_000
+    OPEN_METEO_DAILY_BUDGET: float = 8_000
+
     @property
     def database_url(self) -> URL:
         return URL.create(

@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_session
 from app.service.drought.schema import DroughtStatus
 from app.service.drought.service import get_drought
+from app.service.quota.service import QuotaExceededError
 from app.service.rainfall.districts import DISTRICTS
 
 DROUGHT_ROUTER = APIRouter(prefix="/api/v1/hazards/drought", tags=["drought"])
@@ -28,4 +29,8 @@ async def get_drought_status(
         raise HTTPException(
             status.HTTP_502_BAD_GATEWAY,
             "Rainfall provider is unavailable. Try again later.",
+        ) from exc
+    except QuotaExceededError as exc:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, "Rainfall provider quota reached."
         ) from exc

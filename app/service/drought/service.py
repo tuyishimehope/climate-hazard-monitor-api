@@ -80,7 +80,9 @@ async def get_drought(
         return to_status(stored)
 
     lat, lon = DISTRICTS[district]
-    raw = await fetch_daily_rain(lat, lon, past_days=WINDOW_DAYS, client=client)
+    raw = await fetch_daily_rain(
+        lat, lon, past_days=WINDOW_DAYS, source="drought", client=client
+    )
     by_day = {date.fromisoformat(k): v for k, v in raw.items()}
     total = risk.rain_total(by_day, days)
 

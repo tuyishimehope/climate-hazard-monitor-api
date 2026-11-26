@@ -52,7 +52,7 @@ async def refresh_district(
     client: httpx.AsyncClient | None = None,
 ) -> int:
     lat, lon = DISTRICTS[district]
-    raw = await fetch_daily_rain(lat, lon, client=client)
+    raw = await fetch_daily_rain(lat, lon, source="rainfall", client=client)
     days = {date.fromisoformat(k): v for k, v in raw.items()}
     n = upsert_days(session, district, days, now)
     log.info("refreshed district=%s days=%d", district, n)

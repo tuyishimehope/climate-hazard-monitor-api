@@ -30,3 +30,16 @@ New migration: `alembic revision --autogenerate --rev-id v2 -m "describe change"
 
 Rain total of the last 3 full days. Thresholds (`RAIN_WATCH_MM`, `RAIN_WARNING_MM`)
 are uncalibrated placeholders.
+
+## Open-Meteo usage
+
+Every Open-Meteo request is logged to `api_calls` with its weight (requests over
+14 days count as more than one call). New calls are refused once today's weight
+reaches `OPEN_METEO_DAILY_BUDGET` (default 8,000 of the 10,000 free daily calls).
+
+```bash
+curl "localhost:8000/api/v1/admin/api-usage?start=2026-11-01&end=2026-11-26&source=drought"
+python -m app.jobs.purge_api_calls         # delete rows older than 180 days (run daily)
+```
+
+`/api/v1/admin/*` has no authentication yet. Do not expose it publicly.
