@@ -1,4 +1,4 @@
 from app.db.base import Base
-from app.model.models import RainObservation
+from app.model.models import DroughtAssessment, RainObservation
 
-__all__ = ["Base", "RainObservation"]
+__all__ = ["Base", "DroughtAssessment", "RainObservation"]
