@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     OPEN_METEO_MONTHLY_LIMIT: int = 300_000
     OPEN_METEO_DAILY_BUDGET: float = 8_000
 
+    SECRET_KEY: str
+
     @property
     def database_url(self) -> URL:
         return URL.create(

@@ -48,6 +48,8 @@ dependencies = [
     "pydantic-settings",
     "sqlalchemy",
     "uvicorn",
+    "pwdlib[argon2]",
+    "email-validator",
 ]
 
 

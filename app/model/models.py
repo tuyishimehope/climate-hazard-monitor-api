@@ -1,7 +1,16 @@
+import enum
 from datetime import date, datetime
 
-from sqlalchemy import DateTime, Float, Integer, String, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import (
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+    func,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -47,3 +56,42 @@ class ApiCall(Base):
     ok: Mapped[bool]
     weight: Mapped[float] = mapped_column(Float)
     duration_ms: Mapped[int] = mapped_column(Integer)
+
+
+class User(Base):
+    __tablename__ = "user_account"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    first_name: Mapped[str | None]
+    last_name: Mapped[str | None]
+    email: Mapped[str] = mapped_column(unique=True)
+    password_hash: Mapped[str]
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), index=True, server_default=func.now()
+    )
+
+    sessions: Mapped[list[UserSession]] = relationship(
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True
+    )
+
+
+class SessionStatus(enum.StrEnum):
+    ACTIVE = "active"
+    REVOKED = "revoked"
+
+
+class UserSession(Base):
+    __tablename__ = "user_sessions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    token_hash: Mapped[str] = mapped_column(unique=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("user_account.id", ondelete="CASCADE"), index=True
+    )
+    status: Mapped[SessionStatus] = mapped_column(default=SessionStatus.ACTIVE)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), index=True, server_default=func.now()
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+    user: Mapped[User] = relationship(back_populates="sessions")
